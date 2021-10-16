@@ -10,11 +10,12 @@ public class PlayerController : MonoBehaviour
     private bool isFacingRight =true;
 
     [SerializeField]private float speed =10.0f;
-    [SerializeField] private float jumpForce =500.0f;
+    [SerializeField] private float jumpForce =1200.0f;
     [SerializeField] private float groundCheckRadius = 0.15f;
     [SerializeField] private Transform groundCheckPos;
     [SerializeField] private LayerMask whatIsGround;
-
+    
+    
     //Ladder variables
     private float vert;
     [SerializeField] private float ySpeed = 3f;
@@ -39,11 +40,13 @@ public class PlayerController : MonoBehaviour
         float horiz = Input.GetAxis("Horizontal");
         isGrounded = GroundCheck();
 
+        
         //Jump code
-        if(isGrounded && Input.GetAxis("Jump")>0)
+        if (isGrounded && Input.GetAxis("Jump")>0)
         {
             Jump();
         }
+
         rBody.velocity = new Vector2(horiz * speed, rBody.velocity.y);
 
         // Check if the sprite need to be fliped
@@ -57,9 +60,12 @@ public class PlayerController : MonoBehaviour
         }
 
         if (isClimb)
-        {    rBody.gravityScale = 0f;
+        {
+            jumpForce = 0f;
+            anim.speed = 0f;
+            rBody.gravityScale = 0f;
              rBody.constraints = RigidbodyConstraints2D.FreezeRotation;
-            if (Mathf.Abs(Input.GetAxis("Vertical")) > 0.0f)
+            if (Mathf.Abs(Input.GetAxis("Vertical")) > 0.1f)
             {   
                 transform.position = new Vector3(ladder.transform.position.x, rBody.position.y);
                 Climb();
@@ -67,7 +73,9 @@ public class PlayerController : MonoBehaviour
         }
         else
         {
+            anim.speed = 1f;
             rBody.gravityScale = initialGravity;
+            jumpForce = 1200f;
         }
 
 
@@ -102,28 +110,21 @@ public class PlayerController : MonoBehaviour
 
     private void Climb()
     {
-        //if (Input.GetAxis("Jump") > 0.1f)
-        //{
-
-        //    rBody.constraints = RigidbodyConstraints2D.FreezeRotation;
-        //    isClimb = false;
-        //    rBody.gravityScale = initialGravity;
-        //    Jump();
-        //    return;
-        //}
+        
+        jumpForce = 0f;
         anim.speed = 0f;
         vert = Input.GetAxis("Vertical");
         //Climbing up
         if (vert >0.1f && !topLadder)
         {
-            rBody.velocity = rBody.velocity = new Vector2(0f, vert * ySpeed);
+            rBody.velocity = new Vector2(0f, vert * ySpeed);
             anim.speed = 1f;
            
         }
         //Climbing down
         else if(vert < -0.1f && !bottomLadder)
         {
-            rBody.velocity = rBody.velocity = new Vector2(0f, vert * ySpeed);
+            rBody.velocity = new Vector2(0f, vert * ySpeed);
             anim.speed = 1f;
             
         }
