@@ -15,23 +15,14 @@ public class PlayerController : MonoBehaviour
     [SerializeField] private Transform groundCheckPos;
     [SerializeField] private LayerMask whatIsGround;
     
-    
-    //Ladder variables
-    private float vert;
-    [SerializeField] private float ySpeed = 3f;
-    public bool isClimb = false;
-    public bool bottomLadder = false;
-    public bool topLadder = false;
-    public Ladder ladder;
-    private float initialGravity;
-
+      
 
     // Start is called before the first frame update
     void Start()
     {
         rBody = GetComponent<Rigidbody2D>();
         anim = GetComponent<Animator>();
-        initialGravity = rBody.gravityScale;
+        
     }
 
     //Physics
@@ -59,32 +50,13 @@ public class PlayerController : MonoBehaviour
             Flip();
         }
 
-        if (isClimb)
-        {
-            jumpForce = 0f;
-            anim.speed = 0f;
-            rBody.gravityScale = 0f;
-             rBody.constraints = RigidbodyConstraints2D.FreezeRotation;
-            if (Mathf.Abs(Input.GetAxis("Vertical")) > 0.1f)
-            {   
-                transform.position = new Vector3(ladder.transform.position.x, rBody.position.y);
-                Climb();
-            }
-        }
-        else
-        {
-            anim.speed = 1f;
-            rBody.gravityScale = initialGravity;
-            jumpForce = 1200f;
-        }
-
-
+        
         //set Animator
         
         anim.SetFloat("xVelocity", Mathf.Abs(rBody.velocity.x));
         anim.SetFloat("yVelocity", rBody.velocity.y);
         anim.SetBool("isGrounded", isGrounded);
-        anim.SetBool("isClimb", isClimb);
+       
     }
 
     private bool GroundCheck()
@@ -108,33 +80,5 @@ public class PlayerController : MonoBehaviour
         isFacingRight = !isFacingRight;
     }
 
-    private void Climb()
-    {
-        
-        jumpForce = 0f;
-        anim.speed = 0f;
-        vert = Input.GetAxis("Vertical");
-        //Climbing up
-        if (vert >0.1f && !topLadder)
-        {
-            rBody.velocity = new Vector2(0f, vert * ySpeed);
-            anim.speed = 1f;
-           
-        }
-        //Climbing down
-        else if(vert < -0.1f && !bottomLadder)
-        {
-            rBody.velocity = new Vector2(0f, vert * ySpeed);
-            anim.speed = 1f;
-            
-        }
-        //Stay still
-        else
-        {   
-            anim.speed = 0f;
-            rBody.velocity = Vector2.zero;
-            
-        }
-    }
-
+    
 }
